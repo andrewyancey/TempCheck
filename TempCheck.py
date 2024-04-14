@@ -29,5 +29,5 @@ while True:
     plt.gcf().autofmt_xdate()
     plt.ylim(0, 100)
     plt.xlim(times[0], times[len(times)-1])
-    plt.pause(60)
+    plt.pause(interval)
     

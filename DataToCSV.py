@@ -8,7 +8,7 @@ from datetime import datetime
 
 source = "https://w1.weather.gov/xml/current_obs/KLEX.xml"
 savepath = "Data/mycsv.csv"
-interval = 30
+interval = 500
 
 times = []
 temps = []
@@ -17,7 +17,10 @@ df = pd.DataFrame()
 
 # download the weather data xml from the web
 def download_source(src):
-    data = web.urlopen(src)
+    try:
+        data = web.urlopen(src)
+    except:
+        print('something went wrong while attempting to load the web data')
     return data
 
 # parse the xml data and return an object with the data
