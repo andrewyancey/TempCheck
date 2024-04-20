@@ -4,8 +4,9 @@ import urllib.request as web
 import xml.etree.ElementTree as ElementTree
 import time
 import pandas as pd
+import DirectoryTools
 from datetime import datetime
-from pathlib import Path 
+
 
 source = "https://w1.weather.gov/xml/current_obs/KLEX.xml"
 savepath = "Data/mycsv.csv"
@@ -51,7 +52,7 @@ def save_data(data):
         'dews': dews
     }
     # Ensure the directory exists
-    # Path(savepath).mkdir(parents=True, exist_ok=True)
+    DirectoryTools.EnsureDirectory(savepath)
     # write the csv
     df = pd.DataFrame.from_dict(data)
     df.to_csv(savepath, index=False)
