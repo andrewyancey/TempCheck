@@ -5,16 +5,13 @@ import xml.etree.ElementTree as ElementTree
 import time
 import pandas as pd
 import DirectoryTools
+import WeatherData
 from datetime import datetime
-
 
 source = "https://w1.weather.gov/xml/current_obs/KLEX.xml"
 savepath = "Data/mycsv.csv"
-interval = 500
-
-times = []
-temps = []
-dews = []
+interval = 30
+wxdata = WeatherData.WeatherDataStruct()
 df = pd.DataFrame()
 
 # download the weather data xml from the web
@@ -31,51 +28,23 @@ def parse_xml(data):
     xmldata = ElementTree.parse(data)
     temp = xmldata.find("temp_f").text
     dew = xmldata.find("dewpoint_f").text
-    wxdata = weatherdata(temp, dew)
-    return wxdata
+    wxdatapoint = WeatherData.WeatherDataPoint(temp, dew)
+    return wxdatapoint
 
+# save the data to the csv
 def save_data(data):
-    global temps
-    global dews
-    global times
-    
-    wxdata = parse_xml(data)
-    wxdata.show()
+    wxdatapoint = parse_xml(data)
+    wxdatapoint.show()
     # append the data to the lists to be used for the csv
-    temps.append(wxdata.temp)
-    dews.append(wxdata.dew)
-    times.append(wxdata.time)
-    # build the dictionary for the csv
-    data = {
-        'times': times,
-        'temps': temps,
-        'dews': dews
-    }
+    wxdata.appendWeatherData(wxdatapoint)
     # Ensure the directory exists
     DirectoryTools.EnsureDirectory(savepath)
     # write the csv
-    df = pd.DataFrame.from_dict(data)
+    df = pd.DataFrame.from_dict(wxdata.to_dict())
     df.to_csv(savepath, index=False)
-
-# the weatherdata class stores the data for use
-class weatherdata:
-    temp = 0
-    dew = 0
-    time = 0
-
-    def __init__(self, temp, dew):
-        self.temp = temp
-        self.dew = dew
-        self.time = datetime.now().strftime('%m-%d-%y %H:%M')
-
-    def show(self):
-        print("the temperature is: " + self.temp)
-        print("the dew point is: " + self.dew)
-        print("the time is:" + self.time)
 
 # main loop
 while True:
-    
     # download and store the weather data
     data = download_source(source)
     #if there was an issue downloading the data
