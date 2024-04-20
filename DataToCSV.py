@@ -10,7 +10,7 @@ from datetime import datetime
 
 source = "https://w1.weather.gov/xml/current_obs/KLEX.xml"
 savepath = "Data/mycsv.csv"
-interval = 30
+interval = 120
 wxdata = WeatherData.WeatherDataStruct()
 df = pd.DataFrame()
 
@@ -28,7 +28,9 @@ def parse_xml(data):
     xmldata = ElementTree.parse(data)
     temp = xmldata.find("temp_f").text
     dew = xmldata.find("dewpoint_f").text
-    wxdatapoint = WeatherData.WeatherDataPoint(temp, dew)
+    pressure = xmldata.find("pressure_mb").text
+    datatime = xmldata.find("observation_time_rfc822").text
+    wxdatapoint = WeatherData.WeatherDataPoint(temp, dew, pressure, datatime)
     return wxdatapoint
 
 # save the data to the csv
